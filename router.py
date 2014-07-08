@@ -14,7 +14,7 @@ import tornado.ioloop
 import tornado.websocket
 import tornado.web
 import uuid
-import shelve
+import sqlite3  
 import hashlib
 
 class Application(tornado.web.Application):
@@ -25,7 +25,18 @@ class Application(tornado.web.Application):
     tornado.web.Application.__init__(self, handlers, **settings)
 
 class MainHandler(tornado.websocket.WebSocketHandler):
-  users = shelve.open('users.db')
+  #users = sqlite3.connect('users.db')
+  test = sqlite3.connect('test.db')
+  f = open('test.sql', 'r')
+  sql = f.read()
+  test.executescript(sql)
+
+  with test: 
+    cur = test.cursor()
+    cur.execute("INSERT INTO users VALUES('user1')")
+
+  print "got here"
+
   waiters = dict()  #userid => WebSocketHandler
   sites = dict()    #origin => [userids]
 
