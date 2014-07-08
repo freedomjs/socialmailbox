@@ -15,14 +15,15 @@
  * @param {Function} dispatchEvent callback to signal events
  * @param {WebSocket} webSocket Alternative webSocket implementation for tests
  **/
+
 function WSSocialProvider(dispatchEvent, webSocket) {
   this.dispatchEvent = dispatchEvent;
 
   this.websocket = freedom["core.websocket"] || webSocket;
   if (typeof DEBUG !== 'undefined' && DEBUG) {
-    this.WS_URL = 'ws://p2pbr.com:8083/route/';
+    this.WS_URL = 'ws://localhost:8083/route/';
   } else {
-    this.WS_URL = 'wss://p2pbr.com/mailbox/';
+    this.WS_URL = 'ws://localhost:8083/route/';
   }
   this.social = freedom.social();
   this.view = freedom['core.view']();
@@ -256,7 +257,7 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
 WSSocialProvider.prototype.onLogin = function(msg) {
   if (msg.action === "login"){
     this.conn.send({text: JSON.stringify({cmd: 'login', user: msg.user, password: msg.password})});
-  } else if (msg.action == 'signup' {
+  } else if (msg.action == 'signup') {
     this.conn.send({text: JSON.stringify({cmd: 'register', user: msg.user, password: msg.password})});
   }
 };
