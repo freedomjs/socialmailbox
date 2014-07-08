@@ -239,6 +239,7 @@ WSSocialProvider.prototype.changeRoster = function(id, stat) {
 WSSocialProvider.prototype.onMessage = function(finish, msg) {
   var i;
   msg = JSON.parse(msg.text);
+  console.log("IN ON MESSAGE");
 
   // If directed message, emit event
   if (msg.cmd === 'message') {
