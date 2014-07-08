@@ -105,7 +105,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             MainHandler.waiters[u].write_message(val)
 
 def main():
-  port = 8082
+  port = 8083
   print "Listening on " + str(port) 
   app = Application()
   app.listen(port)
