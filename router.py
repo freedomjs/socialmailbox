@@ -31,12 +31,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   sql = f.read()
   test.executescript(sql)
 
-  with test: 
-    cur = test.cursor()
-    cur.execute("INSERT INTO users VALUES('user1')")
-
-  print "got here"
-
   waiters = dict()  #userid => WebSocketHandler
   sites = dict()    #origin => [userids]
 
@@ -69,51 +63,70 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         MainHandler.sites[key].remove(self.id)
       del MainHandler.waiters[self.id]
     # Broadcast user has left
-    if self.id and self.sites:
-      for site in self.sites:
-        for user in MainHandler.sites[site]:
-          MainHandler.waiters[user].write_message({
-            'cmd': "roster",
-            'id': self.id,
-            'online': False
-          });
+   # if self.id and self.sites:
+    #  for site in self.sites:
+     #   for user in MainHandler.sites[site]:
+      #    MainHandler.waiters[user].write_message({
+       #     'cmd': "roster",
+        #    'id': self.id,
+         #   'online': False
+          #});
 
   # On incoming message
   def on_message(self, msg):
     val = tornado.escape.json_decode(msg)
-    if not self.id and 'cmd' in val and val['cmd'] == 'login':
-      if 'user' in val and 'password' in val and user['val'] in MainHandler:
-        user = MainHandler[val['user']]
-        if hashlib.sha256(val['password'] + user['salt']) == val['hash']:
-          self.id = val['user']
-          return
-      return self.write_message({'error': 'invalid login'})
-    elif not self.id and 'cmd' in val and val['cmd'] == 'register':
-      if 'user' in val and 'password' in val and val['user'] not in MainHandler \
-          and len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3:
-        salt = os.urandom(16)
-        newhash = hashlib.sha256(val['password'] + salt)
-        MainHandler[val['user']] = {'salt': salt, 'hash': newhash}
-        return
-      return self.write_message({'error': 'invalid login'})
-    elif not self.id:
-      return self.write_message({'error': 'not logged in'})
+    if val['cmd'] == 'register': 
+      if len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3: 
+          with MainHandler.test: 
+            cur = MainHandler.test.cursor()
+            cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
+    elif val['cmd'] == 'login':
+      with MainHandler.test: 
+            cur = MainHandler.test.cursor()
+            query = '''SELECT password FROM users 
+            WHERE id=?
+            ''' 
+            results = cur.execute(query, [val['user']])
+            for r in results.fetchall(): 
+              if str(r[0]) == val['password']: 
+                print "yayyy*******************************************"
+                MainHandler.waiters[val['user']].write_message({
+                  'cmd': "login"
+                });
 
-    val['cmd'] = "message";
-    val['from'] = self.id
+    #if not self.id and 'cmd' in val and val['cmd'] == 'login':
+     # if 'user' in val and 'password' in val and user['val'] in MainHandler.user:
+      #  user = MainHandler.user[val['user']]
+       # if hashlib.sha256(val['password'] + user['salt']) == val['hash']:
+        #  self.id = val['user']
+         # return
+      #return self.write_message({'error': 'invalid login'})
+    #elif not self.id and 'cmd' in val and val['cmd'] == 'register':
+     # if 'user' in val and 'password' in val and val['user'] not in MainHandler \
+      #    and len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3:
+       # salt = os.urandom(16)
+        #newhash = hashlib.sha256(val['password'] + salt)
+        #MainHandler[val['user']] = {'salt': salt, 'hash': newhash}
+        #return
+     # return self.write_message({'error': 'invalid login'})
+    # elif not self.id:
+      # return self.write_message({'error': 'not logged in'})
+
+   # val['cmd'] = "message";
+    # val['from'] = self.id
 
     # Check across all sites
-    for s in self.sites:
-      val['site'] = s
+    #for s in self.sites:
+     # val['site'] = s
       # If recipient is specified, find that connection
-      if 'to' in val:
-        if val['to'] in MainHandler.sites[s]:
-          MainHandler.waiters[val['to']].write_message(val)
+      #if 'to' in val:
+       # if val['to'] in MainHandler.sites[s]:
+        #  MainHandler.waiters[val['to']].write_message(val)
       # If no recipient, broadcast to all in that site
-      else:
-        for u in MainHandler.sites[s]:
-          if u != self.id:
-            MainHandler.waiters[u].write_message(val)
+      #else:
+       # for u in MainHandler.sites[s]:
+        #  if u != self.id:
+         #   MainHandler.waiters[u].write_message(val)
 
 def main():
   port = 8083

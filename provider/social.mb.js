@@ -34,7 +34,6 @@ function WSSocialProvider(dispatchEvent, webSocket) {
   //Note that in this.websocket, there is a 1-1 relationship between user and client
   this.users = {};    // List of seen users (<user_profile>)
   this.clients = {};  // List of seen clients (<client_state>)
-
 }
 
 /**
@@ -49,6 +48,7 @@ function WSSocialProvider(dispatchEvent, webSocket) {
 WSSocialProvider.prototype.login = function(loginOpts, continuation) {
   // Wrap the continuation so that it will only be called once by
   // onmessage in the case of success.
+
   var finishLogin = {
     continuation: continuation,
     finish: function(msg, err) {
@@ -189,6 +189,7 @@ WSSocialProvider.prototype.logout = function(continuation) {
  * @return {Object} - same schema as 'onStatus' event
  **/
 WSSocialProvider.prototype.changeRoster = function(id, stat) {
+  console.log("CHANGE ROSTER");
   var newStatus, result = {
     userId: id,
     clientId: id,
@@ -246,7 +247,11 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
       message: msg.msg
     });
   // Roster change event
-  } else if (msg.cmd === 'roster') {
+  } 
+  else if(msg.cmd == 'login') {
+    console.log("ON MSG IN SOCIAL.MB.JS");
+  }
+  else if (msg.cmd === 'roster') {
     this.changeRoster(msg.id, msg.online);
   // No idea what this message is, but let's keep track of who it's from
   } else if (msg.from) {
