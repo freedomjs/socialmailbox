@@ -1,0 +1,17 @@
+{
+  "name": "Mailbox Rendezvous",
+  "description": "Social provider using the router.py rendezvous with registration",
+  "app": {
+    "script": "social.mb.js"
+  },
+  "provides": [
+    "social"
+  ],
+  "permissions": [
+    "core.websocket",
+    "core.view"
+  ],
+  "views": {
+    "login": ["login.html", "login.js"]
+  }
+}

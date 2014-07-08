@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <script type='text/javascript' src='login.js'></script>
+  </head>
+<body id = "login-body">
+  <div id="login-page" class="page" style=""> 
+    <div id="sign-up"> 
+      <button class = "btn btn-primary btn-lg" onclick="toSignup()">sign up</button>
+    </div>
+    <div id="login-container">
+      <header>
+        <img src="../../logo.png"/>
+      </header>
+
+      <section>
+        <span id='status'></span>
+      </section>
+
+      <section>
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for='userId'>User Name:</label>
+            <div class="col-sm-5">
+              <input type='text' class="form-control" name='user' placeholder='User Name'/>
+            </div> 
+            <div class="col-sm-3"></div>
+          </div> 
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for='password'>Password:</label>
+            <div class="col-sm-5"> 
+              <input type='password' class="form-control" name='password' placeholder='Password' />
+            </div> 
+            <div class="col-sm-3"></div>
+          </div>
+
+          <button type='submit' class="btn btn-default" onclick='login()'>Log In</button> 
+        </form>
+      </section>
+    </div> <!--login container--> 
+  </div> 
+
+  <div id="signup-page" class="page" style="">
+    <div id="login-container">
+       <header>
+        <h1> sign up </h1>
+      </header>
+    <section>
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for='userId'>User Name:</label>
+            <div class="col-sm-5">
+              <input type='text' class="form-control" name='user' placeholder='User Name'/>
+            </div> 
+            <div class="col-sm-3"></div>
+          </div> 
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for='password'>Password:</label>
+            <div class="col-sm-5"> 
+              <input type='password' class="form-control" name='password' placeholder='Password' />
+            </div> 
+            <div class="col-sm-3"></div>
+          </div>
+
+          <button type='submit' class="btn btn-default">Sign Up</button> 
+        </form>
+    </section>  
+    </div>
+  </body></html>
+    
