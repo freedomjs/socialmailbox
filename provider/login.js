@@ -11,7 +11,7 @@ function login() {
         password: form.password.value,
         action: 'login'
     };
-    parent.postMessage(credentials, '*');  
+    parent.postMessage(credentials, '*'); //goes to onLogin in social.mb.js
     return false;
   }, true);
 }
@@ -43,7 +43,7 @@ window.onload = function() {
       password: form.password.value,
       action: 'signup'
     };
-    parent.postMessage(newUser, '*');
+    parent.postMessage(newUser, '*'); //goes to onLogin in social.mb.js
     showPage("login-page");      
     document.getElementById('status').innerText = "successfully signed up";
     return false;

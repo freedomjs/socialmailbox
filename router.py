@@ -69,7 +69,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             results = cur.execute(query, [val['user']])
             for r in results.fetchall(): 
               if str(r[0]) == val['password']: 
-                self.write_message({
+                self.write_message({ #goes to social.mb.js, onMessage
                   'user': val['user'], 
                   'cmd': "login"
                 }) 
@@ -81,7 +81,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
       print 'send==========================================================='
       to = val['to']
       if to in MainHandler.waiters: 
-        MainHandler.waiters[to].write_message({
+        MainHandler.waiters[to].write_message({ #goes to social.mb.js, onMessage
           'msg' : val['msg'],
           'cmd' : 'send'
         })

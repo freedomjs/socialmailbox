@@ -239,6 +239,7 @@ WSSocialProvider.prototype.changeRoster = function(id, stat) {
  * @return nothing
  **/
 WSSocialProvider.prototype.onMessage = function(finish, msg) {
+  //from router.py, on_message (write_message)
   var i;
   msg = JSON.parse(msg.text);
 
@@ -267,12 +268,15 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   }
   else if (msg.cmd === 'send') {
     console.log('sent message');
+      this.dispatchEvent ('onMessage', {
+        
+      });
   }
 
   else if (msg.cmd === 'roster') {
     console.log("CMD ROSTER: " + msg.users); 
     for(var i = 0; i < msg.users.length; i++)
-      this.dispatchEvent ('onUserProfile', {
+      this.dispatchEvent ('onUserProfile', { //main.js, social.on(onUserProfile)
         'userId' : msg.users[i]
       });
     //this.changeRoster(msg.id, msg.online);
@@ -283,10 +287,13 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
 };
 
 WSSocialProvider.prototype.onLogin = function(msg) {
-  if (msg.action === "login"){
+  //from login.js
+  if (msg.action === "login"){ 
     this.conn.send({text: JSON.stringify({cmd: 'login', user: msg.user, password: msg.password})});
+    //goes to router.py, on_message
   } else if (msg.action == 'signup') {
     this.conn.send({text: JSON.stringify({cmd: 'register', user: msg.user, password: msg.password})});
+    //goes to router.py, on_message
   }
 };
 
