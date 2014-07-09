@@ -268,9 +268,9 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
     finish.finish(ret); 
   }
   else if (msg.cmd === 'send') {
-    console.log('sent message');
-      this.dispatchEvent ('onMessage', {
-        
+    console.log('sent message  in social.mb: ' + msg.msg);
+      this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage
+        message : msg.msg
       });
   }
 
