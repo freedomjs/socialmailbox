@@ -138,16 +138,18 @@ WSSocialProvider.prototype.getClients = function(continuation) {
  * @param {String} destination_id - target
  * @return nothing
  **/
-WSSocialProvider.prototype.sendMessage = function(to, from, msg, continuation) {
+WSSocialProvider.prototype.sendMessage = function(to, msg, continuation) {
+  console.log("sendmessage to " + to + ", msg: " + msg);
   if (this.conn === null) {
     continuation(undefined, this.err("OFFLINE"));
     return;
-  } else if (!this.clients.hasOwnProperty(to) && !this.users.hasOwnProperty(to)) {
+  }/* else if (!this.clients.hasOwnProperty(to) && !this.users.hasOwnProperty(to)) {
+    console.log("no to");
     continuation(undefined, this.err("SEND_INVALIDDESTINATION"));
     return;
-  }
+  }*/
 
-  this.conn.send({text: JSON.stringify({cmd: 'send', to: to, from:from, msg: msg})});
+  this.conn.send({text: JSON.stringify({cmd: 'send', to: to, msg: msg})});
   continuation();
 };
 
@@ -263,6 +265,10 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
 
     finish.finish(ret); 
   }
+  else if (msg.cmd === 'send') {
+    console.log('sent message');
+  }
+
   else if (msg.cmd === 'roster') {
     console.log("CMD ROSTER: " + msg.users); 
     for(var i = 0; i < msg.users.length; i++)

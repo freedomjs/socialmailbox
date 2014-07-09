@@ -69,13 +69,12 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             results = cur.execute(query, [val['user']])
             for r in results.fetchall(): 
               if str(r[0]) == val['password']: 
-                print "matched credentials=========================="
                 self.write_message({
                   'user': val['user'], 
                   'cmd': "login"
                 }) 
-                #self.id = val['user']
-                #MainHandler.waiters[self.id] = self
+                self.id = val['user']
+                MainHandler.waiters[self.id] = self
                 #look at queue
 
     elif val['cmd'] == 'send':
@@ -83,9 +82,11 @@ class MainHandler(tornado.websocket.WebSocketHandler):
       to = val['to']
       if to in MainHandler.waiters: 
         MainHandler.waiters[to].write_message({
-          'from' : val['from'], 
-          'msg' : val['msg']
+          'msg' : val['msg'],
+          'cmd' : 'send'
         })
+        print val['msg'] + "**********"
+
       else:
         print 'q msg========================================'
 #        MainHandler.queue
