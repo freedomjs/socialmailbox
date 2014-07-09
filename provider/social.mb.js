@@ -252,6 +252,8 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
 
     this.view.close(); 
 
+    this.conn.send({text: JSON.stringify({cmd: 'get_users'})});
+
     var ret = {
       'userId' : msg.user, 
       'clientId' : msg.user,
@@ -262,7 +264,12 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
     finish.finish(ret); 
   }
   else if (msg.cmd === 'roster') {
-    this.changeRoster(msg.id, msg.online);
+    console.log("CMD ROSTER: " + msg.users); 
+    for(var i = 0; i < msg.users.length; i++)
+      this.dispatchEvent ('onUserProfile', {
+        'userId' : msg.users[i]
+      });
+    //this.changeRoster(msg.id, msg.online);
   // No idea what this message is, but let's keep track of who it's from
   } else if (msg.from) {
     this.changeRoster(msg.from, true);
