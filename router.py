@@ -89,7 +89,9 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             results = cur.execute(query, [val['user']])
             for r in results.fetchall(): 
               if str(r[0]) == val['password']: 
-                self.write_message({'cmd': "login"});
+                self.write_message({
+                  'user': val['user'], 
+                  'cmd': "login"});
 
     #if not self.id and 'cmd' in val and val['cmd'] == 'login':
      # if 'user' in val and 'password' in val and user['val'] in MainHandler.user:

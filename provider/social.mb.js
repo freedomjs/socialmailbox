@@ -189,7 +189,6 @@ WSSocialProvider.prototype.logout = function(continuation) {
  * @return {Object} - same schema as 'onStatus' event
  **/
 WSSocialProvider.prototype.changeRoster = function(id, stat) {
-  console.log("CHANGE ROSTER");
   var newStatus, result = {
     userId: id,
     clientId: id,
@@ -239,7 +238,6 @@ WSSocialProvider.prototype.changeRoster = function(id, stat) {
 WSSocialProvider.prototype.onMessage = function(finish, msg) {
   var i;
   msg = JSON.parse(msg.text);
-  console.log("IN ON MESSAGE");
 
   // If directed message, emit event
   if (msg.cmd === 'message') {
@@ -250,7 +248,18 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   // Roster change event
   } 
   else if(msg.cmd == 'login') {
-    console.log("ON MSG IN SOCIAL.MB.JS");
+    //this.changeRoster(msg.user, true); 
+
+    this.view.close(); 
+
+    var ret = {
+      'userId' : msg.user, 
+      'clientId' : msg.user,
+      'status' : 'ONLINE',
+      'timestamp' : '2'
+    }; 
+
+    finish.finish(ret); 
   }
   else if (msg.cmd === 'roster') {
     this.changeRoster(msg.id, msg.online);
