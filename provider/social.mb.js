@@ -64,7 +64,7 @@ WSSocialProvider.prototype.login = function(loginOpts, continuation) {
     return;
   }
   this.conn = this.websocket(this.WS_URL + loginOpts.agent);
-  if (this.conn ===null) console.log('null this.conn');
+
   // Save the continuation until we get a status message for
   // successful login.
   this.view.on('message', this.onLogin.bind(this));
@@ -240,8 +240,6 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   var i;
   msg = JSON.parse(msg.text);
 
-  if (msg.cmd === '')
-
   // If directed message, emit event
   if (msg.cmd === 'message') {
     this.dispatchEvent('onMessage', {
@@ -252,7 +250,6 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   } 
   else if(msg.cmd == 'login') {
     //this.changeRoster(msg.user, true); 
-
     this.view.close(); 
 
     this.conn.send({text: JSON.stringify({cmd: 'get_users'})});

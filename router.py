@@ -42,7 +42,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   def open(self, app_id):
     if (app_id == None or app_id == ''):
       app_id = self.request.headers.get("Origin")
-    self.setup(app_id)
+    #self.setup(app_id)
     
   def on_finish(self):
     self.on_close()
@@ -69,11 +69,13 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             results = cur.execute(query, [val['user']])
             for r in results.fetchall(): 
               if str(r[0]) == val['password']: 
+                print "matched credentials=========================="
                 self.write_message({
                   'user': val['user'], 
-                  'cmd': "login"});
-                self.id = val['user']
-                MainHandler.waiters[self.id] = self
+                  'cmd': "login"
+                }) 
+                #self.id = val['user']
+                #MainHandler.waiters[self.id] = self
                 #look at queue
 
     elif val['cmd'] == 'send':
