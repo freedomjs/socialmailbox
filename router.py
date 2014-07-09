@@ -32,7 +32,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   test.executescript(sql)
 
   waiters = dict()  #userid => WebSocketHandler
-  sites = dict()    #origin => [userids]
 
   def allow_draft76(self):
     return True
@@ -45,13 +44,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
       app_id = self.request.headers.get("Origin")
     self.setup(app_id)
     
-  # Setup a new connection
-  def setup(self, site):
-    self.sites = [site]
-
-    if not site in MainHandler.sites:
-      MainHandler.sites[site] = []
-
   def on_finish(self):
     self.on_close()
   
@@ -59,19 +51,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   def on_close(self):
     if hasattr(self, 'id'):
       # Cleanup global state
-      for key in self.sites:
-        MainHandler.sites[key].remove(self.id)
       del MainHandler.waiters[self.id]
-    # Broadcast user has left
-   # if self.id and self.sites:
-    #  for site in self.sites:
-     #   for user in MainHandler.sites[site]:
-      #    MainHandler.waiters[user].write_message({
-       #     'cmd': "roster",
-        #    'id': self.id,
-         #   'online': False
-          #});
-
   # On incoming message
   def on_message(self, msg):
     val = tornado.escape.json_decode(msg)
@@ -92,6 +72,22 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                 self.write_message({
                   'user': val['user'], 
                   'cmd': "login"});
+                self.id = val['user']
+                MainHandler.waiters[self.id] = self
+                #look at queue
+
+    elif val['cmd'] == 'send':
+      print 'send==========================================================='
+      to = val['to']
+      if to in MainHandler.waiters: 
+        MainHandler.waiters[to].write_message({
+          'from' : val['from'], 
+          'msg' : val['msg']
+        })
+      else:
+        print 'q msg========================================'
+#        MainHandler.queue
+
     elif val['cmd'] == 'get_users':
       with MainHandler.test:
         cur = MainHandler.test.cursor() 
@@ -121,19 +117,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
 
    # val['cmd'] = "message";
     # val['from'] = self.id
-
-    # Check across all sites
-    #for s in self.sites:
-     # val['site'] = s
-      # If recipient is specified, find that connection
-      #if 'to' in val:
-       # if val['to'] in MainHandler.sites[s]:
-        #  MainHandler.waiters[val['to']].write_message(val)
-      # If no recipient, broadcast to all in that site
-      #else:
-       # for u in MainHandler.sites[s]:
-        #  if u != self.id:
-         #   MainHandler.waiters[u].write_message(val)
 
 def main():
   port = 8083
