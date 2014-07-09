@@ -32,6 +32,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   test.executescript(sql)
 
   waiters = dict()  #userid => WebSocketHandler
+  msg_dict = dict() #pendingMsgs 
 
   def allow_draft76(self):
     return True
@@ -75,10 +76,14 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                 }) 
                 self.id = val['user']
                 MainHandler.waiters[self.id] = self
-                #look at queue
+
+                #look at pending msgs 
+                if self.id in MainHandler.msg_dict: 
+                  print "MSGS WAITING______________________" + str(MainHandler.msg_dict[self.id][0]['msg'])
+                else: 
+                  print "NO MSGS WAITING______________________"
 
     elif val['cmd'] == 'send':
-      print 'send==========================================================='
       to = val['to']
       if to in MainHandler.waiters: 
         MainHandler.waiters[to].write_message({ #goes to social.mb.js, onMessage
@@ -88,8 +93,18 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         print val['msg'] + "**********"
 
       else:
-        print 'q msg========================================'
-#        MainHandler.queue
+        print 'q msg========================================' + self.id
+        msg = {
+          'from' : self.id,
+          'msg' : val['msg'], 
+          'timestamp' : '2'  
+        }
+        msg_q = []
+        if to in MainHandler.msg_dict: 
+          msg_q = MainHandler.msg_dict[to]
+
+        msg_q.append(msg)
+        MainHandler.msg_dict[to] = msg_q
 
     elif val['cmd'] == 'get_users':
       with MainHandler.test:

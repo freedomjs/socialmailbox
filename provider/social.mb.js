@@ -149,6 +149,7 @@ WSSocialProvider.prototype.sendMessage = function(to, msg, continuation) {
     return;
   }*/
 
+  //sends msg to router on_message
   this.conn.send({text: JSON.stringify({cmd: 'send', to: to, msg: msg})});
   continuation();
 };
