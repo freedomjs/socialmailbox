@@ -146,7 +146,6 @@ WSSocialProvider.prototype.getClients = function(continuation) {
  * @return nothing
  **/
 WSSocialProvider.prototype.sendMessage = function(to, msg, continuation) {
-  console.log("sendmessage to " + to + ", msg: " + msg);
   if (this.conn === null) {
     continuation(undefined, this.err("OFFLINE"));
     return;
@@ -275,7 +274,6 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
     finish.finish(ret); 
   }
   else if (msg.cmd === 'send') {
-    console.log('sent message  in social.mb: ' + msg.msg);
       this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage
         message : msg.msg
       });
