@@ -62,6 +62,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             cur = MainHandler.test.cursor()
             cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
     elif val['cmd'] == 'login':
+      print "user in login========================" + val['user'] 
       with MainHandler.test: 
             cur = MainHandler.test.cursor()
             query = '''SELECT password FROM users 
@@ -76,6 +77,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                 }) 
                 self.id = val['user']
                 MainHandler.waiters[self.id] = self
+                print "MAIN HANDLER WAITER>>>>>>>>>>>>" + self.id
 
                 #look at pending msgs 
                 if self.id in MainHandler.msg_dict: 

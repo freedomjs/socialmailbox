@@ -68,7 +68,6 @@ WSSocialProvider.prototype.login = function(loginOpts, continuation) {
   // Save the continuation until we get a status message for
   // successful login.
   this.view.on('message', this.onLogin.bind(this));
-  this.view.open('login', {file: 'login.html'}).then(this.view.show.bind(this.view));
 
   this.conn.on("onMessage", this.onMessage.bind(this, finishLogin));
   this.conn.on("onError", function (cont, error) {
@@ -80,6 +79,12 @@ WSSocialProvider.prototype.login = function(loginOpts, continuation) {
     this.changeRoster(this.id, false);
   }.bind(this, finishLogin));
 
+
+  if(loginOpts.interactive)
+    this.view.open('login', {file: 'login.html'}).then(this.view.show.bind(this.view));
+  else { 
+    this.conn.send({text: JSON.stringify({cmd: 'login', user: loginOpts.url, password: 'pppp'})});
+  }
 };
 
 /**
