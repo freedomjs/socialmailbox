@@ -83,7 +83,9 @@ WSSocialProvider.prototype.login = function(loginOpts, continuation) {
   if(loginOpts.interactive)
     this.view.open('login', {file: 'login.html'}).then(this.view.show.bind(this.view));
   else { 
-    this.conn.send({text: JSON.stringify({cmd: 'login', user: loginOpts.url, password: 'pppp'})});
+    this.conn.on("onOpen", function(cont, msg) {
+      this.conn.send({text: JSON.stringify({cmd: 'login', user: loginOpts.url, password: 'pppp'})});
+    }.bind(this, finishLogin));  
   }
 };
 
