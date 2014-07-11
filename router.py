@@ -56,33 +56,36 @@ class MainHandler(tornado.websocket.WebSocketHandler):
           with MainHandler.test: 
             salt = os.urandom(16)
             cur = MainHandler.test.cursor()
-            cur.execute("INSERT INTO users (id,salt,hash) VALUES(?,?,?);",
+            cur.execute("INSERT INTO users (id,salt,hash) VALUES(?,?,?)",
                 (val['user'], salt, hashlib.sha256(val['password'] + salt)))
     elif val['cmd'] == 'login':
       with MainHandler.test: 
             cur = MainHandler.test.cursor()
-            results = cur.execute("SELECT salt,hash FROM users WHERE id=?", (val['user']))
-            for r in results.fetchall(): 
-              if hashlib.sha256(r[0] + val['password']) == str(r[1]):
-                self.write_message({ #goes to social.mb.js, onMessage
-                  'user': val['user'], 
-                  'cmd': "login"
-                }) 
-                self.id = val['user']
-                MainHandler.waiters[self.id] = self
-                print "MAIN HANDLER WAITER>>>>>>>>>>>>" + self.id
+            results = cur.execute("SELECT salt,hash FROM users WHERE id=? LIMIT 1",
+                (val['user']))
+            r = results.fetchone()
+            if hashlib.sha256(r[0] + val['password']) == str(r[1]):
+              self.write_message({ #goes to social.mb.js, onMessage
+                'user': val['user'], 
+                'cmd': "login"
+              }) 
+              self.id = val['user']
+              MainHandler.waiters[self.id] = self
+              print "MAIN HANDLER WAITER>>>>>>>>>>>>" + self.id
 
-                #look at pending msgs 
-                if self.id in MainHandler.msg_dict: 
+              #send pending msgs 
+              if self.id in MainHandler.msg_dict: 
+
                   print "MSGS WAITING______________________" + str(MainHandler.msg_dict[self.id][0]['msg'])
                 else: 
                   print "NO MSGS WAITING______________________"
 
-    elif val['cmd'] == 'send':
+    elif val['cmd'] == 'send' and self.id:
       to = val['to']
       if to in MainHandler.waiters: 
         MainHandler.waiters[to].write_message({ #goes to social.mb.js, onMessage
           'msg' : val['msg'],
+          'from': self.id
           'cmd' : 'send'
         })
         print val['msg'] + "**********"
@@ -101,7 +104,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         msg_q.append(msg)
         MainHandler.msg_dict[to] = msg_q
 
-    elif val['cmd'] == 'get_users':
+    elif val['cmd'] == 'get_users' and self.id:
       with MainHandler.test:
         cur = MainHandler.test.cursor() 
         results = cur.execute("SELECT id FROM users")
