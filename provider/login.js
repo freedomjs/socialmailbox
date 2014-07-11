@@ -51,6 +51,7 @@ window.onload = function() {
 
 
   window.addEventListener('message', function(m) {
+    console.log("on message in login.js");
     document.getElementById('status').innerText = m.data;
   }, true);
 } 

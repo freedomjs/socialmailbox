@@ -273,10 +273,13 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
 
     finish.finish(ret); 
   }
+  else if(msg.error === 'invalid login') {
+    this.view.postMessage("Invalid credentials!"); 
+  }
   else if (msg.cmd === 'send') {
-      this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage
-        message : msg.msg
-      });
+    this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage
+      message : msg.msg
+    });
   }
 
   else if (msg.cmd === 'roster') {

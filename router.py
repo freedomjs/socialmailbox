@@ -68,8 +68,12 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             WHERE id=?
             ''' 
             results = cur.execute(query, [val['user']])
+
+            login_success = False
+
             for r in results.fetchall(): 
               if str(r[0]) == val['password']: 
+                login_success = True
                 self.write_message({ #goes to social.mb.js, onMessage
                   'user': val['user'], 
                   'cmd': "login"
@@ -83,6 +87,10 @@ class MainHandler(tornado.websocket.WebSocketHandler):
                   print "MSGS WAITING______________________" + str(MainHandler.msg_dict[self.id][0]['msg'])
                 else: 
                   print "NO MSGS WAITING______________________"
+            if login_success is False: 
+                self.write_message({
+                  'error': 'invalid login'
+                })
 
     elif val['cmd'] == 'send':
       to = val['to']
