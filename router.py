@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Websocket rendezvous with persistent accounts.
-Listens on http://localhost:8082/route
+Listens on http://localhost:8083/route
   Depends on python-tornado
 """
 import os, sys, inspect
@@ -20,16 +20,13 @@ import hashlib
 class Application(tornado.web.Application):
   def __init__(self):
     handlers = [(r"/route/([a-zA-Z0-9_]*)", MainHandler)]
-    #handlers = [(r"/route", MainHandler)]
     settings = dict( autoescape=None )
     tornado.web.Application.__init__(self, handlers, **settings)
 
 class MainHandler(tornado.websocket.WebSocketHandler):
-  #users = sqlite3.connect('users.db')
-  test = sqlite3.connect('test.db')
-  f = open('test.sql', 'r')
-  sql = f.read()
-  test.executescript(sql)
+  test = sqlite3.connect('user.db')
+
+  test.executescript("create table if not exists users (id varchar primary key, salt varchar, hash varchar);")
 
   waiters = dict()  #userid => WebSocketHandler
   msg_dict = dict() #pendingMsgs 
@@ -37,13 +34,10 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   def allow_draft76(self):
     return True
 
-  #def open(self):
-  #  self.setup(self.request.headers.get("Origin"))
   
   def open(self, app_id):
     if (app_id == None or app_id == ''):
       app_id = self.request.headers.get("Origin")
-    #self.setup(app_id)
     
   def on_finish(self):
     self.on_close()
@@ -53,23 +47,23 @@ class MainHandler(tornado.websocket.WebSocketHandler):
     if hasattr(self, 'id'):
       # Cleanup global state
       del MainHandler.waiters[self.id]
+
   # On incoming message
   def on_message(self, msg):
     val = tornado.escape.json_decode(msg)
     if val['cmd'] == 'register': 
       if len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3: 
           with MainHandler.test: 
+            salt = os.urandom(16)
             cur = MainHandler.test.cursor()
-            cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
+            cur.execute("INSERT INTO users (id,salt,hash) VALUES(?,?,?);",
+                (val['user'], salt, hashlib.sha256(val['password'] + salt)))
     elif val['cmd'] == 'login':
       with MainHandler.test: 
             cur = MainHandler.test.cursor()
-            query = '''SELECT password FROM users 
-            WHERE id=?
-            ''' 
-            results = cur.execute(query, [val['user']])
+            results = cur.execute("SELECT salt,hash FROM users WHERE id=?", (val['user']))
             for r in results.fetchall(): 
-              if str(r[0]) == val['password']: 
+              if hashlib.sha256(r[0] + val['password']) == str(r[1]):
                 self.write_message({ #goes to social.mb.js, onMessage
                   'user': val['user'], 
                   'cmd': "login"
@@ -115,27 +109,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
           'cmd' : 'roster', 
           'users' : results.fetchall()
         })
-
-    #if not self.id and 'cmd' in val and val['cmd'] == 'login':
-     # if 'user' in val and 'password' in val and user['val'] in MainHandler.user:
-      #  user = MainHandler.user[val['user']]
-       # if hashlib.sha256(val['password'] + user['salt']) == val['hash']:
-        #  self.id = val['user']
-         # return
-      #return self.write_message({'error': 'invalid login'})
-    #elif not self.id and 'cmd' in val and val['cmd'] == 'register':
-     # if 'user' in val and 'password' in val and val['user'] not in MainHandler \
-      #    and len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3:
-       # salt = os.urandom(16)
-        #newhash = hashlib.sha256(val['password'] + salt)
-        #MainHandler[val['user']] = {'salt': salt, 'hash': newhash}
-        #return
-     # return self.write_message({'error': 'invalid login'})
-    # elif not self.id:
-      # return self.write_message({'error': 'not logged in'})
-
-   # val['cmd'] = "message";
-    # val['from'] = self.id
 
 def main():
   port = 8083
