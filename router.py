@@ -29,7 +29,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   test.executescript("create table if not exists users (id varchar primary key, salt varchar, hash varchar);")
 
   waiters = dict()  #userid => WebSocketHandler
-  msg_dict = dict() #pendingMsgs 
+  msg_q = []
 
   def allow_draft76(self):
     return True
