@@ -86,7 +86,7 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         MainHandler.waiters[to].write_message({ #goes to social.mb.js, onMessage
           'msg' : val['msg'],
           'from': self.id
-          'cmd' : 'send'
+          'cmd' : 'message'
         })
         print val['msg'] + "**********"
 
