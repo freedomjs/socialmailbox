@@ -236,9 +236,9 @@ WSSocialProvider.prototype.changeRoster = function(id, stat) {
 /**
  * Handle messages from the server
  * There are 3 types of messages
- * - Directed messages from friends.
- * - Notifications of new users visible.
- * - Responses to login / signup.
+ * - Actual messages from friends.
+ * - Notifications of new users on the server.
+ * - Responses to login / signup requests.
  *
  * @method onMessage
  * @private
@@ -286,6 +286,11 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   }
 };
 
+/**
+ * Handle requests from the user login view.
+ *
+ * @param {Object} msg The message sent from the view.
+ */
 WSSocialProvider.prototype.onLogin = function(msg) {
   //from login.js
   if (msg.action === "login"){ 

@@ -73,12 +73,11 @@ class MainHandler(tornado.websocket.WebSocketHandler):
               MainHandler.waiters[self.id] = self
               print "MAIN HANDLER WAITER>>>>>>>>>>>>" + self.id
 
-              #send pending msgs 
-              if self.id in MainHandler.msg_dict: 
-
-                  print "MSGS WAITING______________________" + str(MainHandler.msg_dict[self.id][0]['msg'])
-                else: 
-                  print "NO MSGS WAITING______________________"
+              #send pending msgs
+              for msg in MainHandler.msg_q:
+                if msg.to == self.id:
+                  self.write_message(msg)
+                  MainHandler.msg_q.remove(msg)
 
     elif val['cmd'] == 'send' and self.id:
       to = val['to']
@@ -91,18 +90,15 @@ class MainHandler(tornado.websocket.WebSocketHandler):
         print val['msg'] + "**********"
 
       else:
-        print 'q msg========================================' + self.id
         msg = {
           'from' : self.id,
-          'msg' : val['msg'], 
-          'timestamp' : '2'  
+          'to': to,
+          'msg' : val['msg'],
+          'cmd': 'message'  
         }
-        msg_q = []
-        if to in MainHandler.msg_dict: 
-          msg_q = MainHandler.msg_dict[to]
-
-        msg_q.append(msg)
-        MainHandler.msg_dict[to] = msg_q
+        MainHandler.msg_q.insert(0, msg);
+        if (MainHandler.msg_q.length > 100):
+          MainHandler.msg_q.pop()
 
     elif val['cmd'] == 'get_users' and self.id:
       with MainHandler.test:
