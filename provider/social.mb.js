@@ -20,7 +20,7 @@ function WSSocialProvider(dispatchEvent, webSocket) {
 
   this.websocket = freedom["core.websocket"] || webSocket;
   if (typeof DEBUG !== 'undefined' && DEBUG) {
-    this.WS_URL = 'ws://localhost:8083/route/';
+    this.WS_URL = 'ws://localhost:8083/mailbox/';
   } else {
     this.WS_URL = 'wss://p2pbr.com/mailbox/';
   }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 Websocket rendezvous with persistent accounts.
-Listens on http://localhost:8083/route
+Listens on http://localhost:8083/mailbox
   Depends on python-tornado
 """
 import os, sys, inspect
@@ -19,7 +19,7 @@ import hashlib
 
 class Application(tornado.web.Application):
   def __init__(self):
-    handlers = [(r"/route/([a-zA-Z0-9_]*)", MainHandler)]
+    handlers = [(r"/mailbox/([a-zA-Z0-9_]*)", MainHandler)]
     settings = dict( autoescape=None )
     tornado.web.Application.__init__(self, handlers, **settings)
 
