@@ -99,8 +99,6 @@ class MainHandler(tornado.websocket.WebSocketHandler):
           'msg' : val['msg'],
           'cmd' : 'send'
         })
-        print val['msg'] + "**********"
-
       else:
         print 'q msg========================================' + self.id
         msg = {
