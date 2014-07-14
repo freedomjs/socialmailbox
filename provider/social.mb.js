@@ -156,7 +156,7 @@ WSSocialProvider.prototype.sendMessage = function(to, msg, continuation) {
   }*/
 
   //sends msg to router on_message
-  console.log("MESSAGE IN SOCIAL " + msg);
+  console.log("MESSAGE IN SOCIAL ");// + msg);
   this.conn.send({text: JSON.stringify({cmd: 'send', to: to, msg: msg})});
   continuation();
 };
@@ -278,7 +278,7 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
     this.view.postMessage("Invalid credentials!"); 
   }
   else if (msg.cmd === 'send') {
-    console.log("MESSAGE IN SOCIAL SEND FOR AUTHOR " + msg.msg);
+    console.log("MESSAGE IN SOCIAL SEND FOR AUTHOR ");// + msg.msg);
     this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage
       message : msg.msg
     });
