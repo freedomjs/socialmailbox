@@ -62,6 +62,12 @@ class MainHandler(tornado.websocket.WebSocketHandler):
             cur = MainHandler.test.cursor()
             try:
               cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
+
+              for to in MainHandler.waiters: 
+                MainHandler.waiters[to].write_message({
+                  'user': val['user'],
+                  'cmd': "register"
+                })
             except Exception as error:
               print("Didn't work: " + str(error))
               self.write_message({

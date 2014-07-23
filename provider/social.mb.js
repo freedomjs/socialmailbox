@@ -289,7 +289,12 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
       message : msg.msg
     });
   }
-
+  else if(msg.cmd === 'register') {
+    console.log("add new user: " + msg.user);
+    this.dispatchEvent ('onUserProfile', { //main.js, social.on(onUserProfile)
+      'userId' : msg.user
+    });
+  }
   else if (msg.cmd === 'roster') {
     console.log("CMD ROSTER: " + msg.users); 
     for(var i = 0; i < msg.users.length; i++)
