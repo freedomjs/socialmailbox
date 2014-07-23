@@ -277,6 +277,12 @@ WSSocialProvider.prototype.onMessage = function(finish, msg) {
   else if(msg.error === 'invalid login') {
     this.view.postMessage("Invalid credentials!"); 
   }
+  else if(msg.error === 'registration duplicate') {
+    this.view.postMessage("Username already taken"); 
+  }
+  else if(msg.error === 'length') {
+    this.view.postMessage("Username and password must be longer than 3 characters."); 
+  }
   else if (msg.cmd === 'send') {
 //    console.log("MESSAGE IN SOCIAL SEND FOR AUTHOR MESSAGE" + JSON.stringify(msg.msg));
     this.dispatchEvent ('onMessage', { //from router.py on_message, goes to main.js onMessage

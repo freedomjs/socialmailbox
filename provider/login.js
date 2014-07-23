@@ -43,8 +43,11 @@ window.onload = function() {
       password: form.password.value,
       action: 'signup'
     };
-    parent.postMessage(newUser, '*'); //goes to onLogin in social.mb.js
-    showPage("login-page");
+    parent.postMessage(newUser, '*');
+    
+    showPage("login-page"); 
+ //goes to onLogin in social.mb.js
+    
     var sts = document.getElementsByClassName('status');
     for (var i = 0; i < sts.length; i++){
       sts[i].innerText = "successfully signed up";

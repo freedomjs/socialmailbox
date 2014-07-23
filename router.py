@@ -57,16 +57,20 @@ class MainHandler(tornado.websocket.WebSocketHandler):
   def on_message(self, msg):
     val = tornado.escape.json_decode(msg)
     if val['cmd'] == 'register': 
-      if len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3: 
+      if len(val['user']) > 3 and len(val['password']) > 3: 
           with MainHandler.test: 
             cur = MainHandler.test.cursor()
             try:
               cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
             except Exception as error:
-              print("Didn't work: " + error)
+              print("Didn't work: " + str(error))
               self.write_message({
-                'error': 'Error in creating user: ' + error
+                'error': 'registration duplicate' 
               })
+      else: 
+        self.write_message({
+          'error': 'length'
+        })
     elif val['cmd'] == 'login':
       with MainHandler.test: 
             cur = MainHandler.test.cursor()
