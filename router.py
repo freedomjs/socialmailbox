@@ -60,7 +60,13 @@ class MainHandler(tornado.websocket.WebSocketHandler):
       if len(val['user']) > 3 and len(val['user']) < 20 and len(val['password']) > 3: 
           with MainHandler.test: 
             cur = MainHandler.test.cursor()
-            cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
+            try:
+              cur.execute("INSERT INTO users VALUES('" + val['user'] + "','" + val['password'] + "')")
+            except Exception as error:
+              print("Didn't work: " + error)
+              self.write_message({
+                'error': 'Error in creating user: ' + error
+              })
     elif val['cmd'] == 'login':
       with MainHandler.test: 
             cur = MainHandler.test.cursor()

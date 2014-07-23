@@ -44,14 +44,19 @@ window.onload = function() {
       action: 'signup'
     };
     parent.postMessage(newUser, '*'); //goes to onLogin in social.mb.js
-    showPage("login-page");      
-    document.getElementById('status').innerText = "successfully signed up";
+    showPage("login-page");
+    var sts = document.getElementsByClassName('status');
+    for (var i = 0; i < sts.length; i++){
+      sts[i].innerText = "successfully signed up";
+    }
     return false;
   }, true);
 
-
   window.addEventListener('message', function(m) {
+    var sts = document.getElementsByClassName('status');
     console.log("on message in login.js");
-    document.getElementById('status').innerText = m.data;
+    for (var i = 0; i < sts.length; i++){
+      sts[i].innerText =  m.data;
+    }
   }, true);
 } 
